@@ -43,3 +43,16 @@ export const deleteTask = async (id: string) => {
         throw new Error("An unexpected error occurred. Please try again.");
     }
 }
+
+export const updateTask = async (id: string, updateData: CreateTaskRequest) => {
+    try {
+        await API.put(`/tasks/${id}`, updateData);
+    }catch (error) {
+        if (error instanceof AxiosError) {
+
+            const errorMessage = error.response?.data?.message || "Updating task failed. Please try again.";
+            throw new Error(errorMessage);
+        }
+        throw new Error("An unexpected error occurred. Please try again.");
+    }
+}
