@@ -15,6 +15,8 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import TaskForm from "@/components/task-form";
+import {Dialog, DialogContent, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
 
 export default function TaskCard({task}: {task: Task}) {
 
@@ -43,9 +45,15 @@ export default function TaskCard({task}: {task: Task}) {
             </div>
             <div className="flex items-center gap-2">
                 <DeleteModal onclick={handleDelete} />
-                <button>
-                    <SquarePen/>
-                </button>
+                <Dialog>
+                    <DialogTrigger>
+                        <SquarePen />
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogTitle>Edit Task</DialogTitle>
+                        <TaskForm task={task} />
+                    </DialogContent>
+                </Dialog>
             </div>
         </div>
     )
