@@ -1,5 +1,5 @@
 import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
-import AddTaskForm from "@/components/add-task-form";
+import AddTaskForm from "@/components/task-form";
 import {Button} from "@/components/ui/button";
 
 export default function AddTaskV2() {
