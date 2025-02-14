@@ -10,6 +10,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {Button} from "@/components/ui/button";
 import {useAddTask, useUpdateTask} from "@/hooks/useTasks";
 import {toast} from "react-toastify";
+import {Textarea} from "@/components/ui/text-area";
 
 
 const formSchema = z.object({
@@ -95,7 +96,7 @@ export default function TaskForm({ task }: { task?: Task }) {
                             <FormItem>
                                 <FormLabel>Description</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Enter task description" {...field} />
+                                    <Textarea placeholder="Enter task description" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
