@@ -126,7 +126,11 @@ export default function RegisterForm() {
                         <Link href="/" className="font-medium">Login</Link>
                     </div>
 
-                    <Button type="submit">Register</Button>
+                    <Button type="submit" disabled={isPending}>
+                        {
+                            isPending ? 'Registering' : 'Register'
+                        }
+                    </Button>
                 </form>
             </Form>
         </div>
