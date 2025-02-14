@@ -1,14 +1,14 @@
 'use client'
 
 import {z} from "zod";
-import {CreateTaskRequest, Priority, Status} from "@/types";
+import {CreateTaskRequest, Priority, Status, Task} from "@/types";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
-import {useAddTask} from "@/hooks/useTasks";
+import {useAddTask, useUpdateTask} from "@/hooks/useTasks";
 import {toast} from "react-toastify";
 
 
@@ -20,27 +20,53 @@ const formSchema = z.object({
     dueDate: z.string().min(1, "Due date is required").refine((date) => !isNaN(Date.parse(date)), "Invalid date format"),
 });
 
-export default function AddTaskForm() {
+export default function TaskForm({ task }: { task?: Task }) {
+    const isUpdate = !!task;
 
-    const addTaskMutation = useAddTask();
+    const addMutation = useAddTask();
+    const updateMutation = useUpdateTask();
+
+    function formatDateForInput(dateString: string) {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) {
+            return "";
+        }
+        return date.toISOString().split("T")[0];
+    }
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            title: "",
-            description: "",
-            priority: Priority.Medium,
-            status: Status.Pending,
-            dueDate: "",
-        },
+        defaultValues: task
+            ? {
+                title: task.title,
+                description: task.description,
+                priority: task.priority,
+                status: task.status,
+                dueDate: formatDateForInput(task.dueDate),
+            }
+            : {
+                title: "",
+                description: "",
+                priority: Priority.Medium,
+                status: Status.Pending,
+                dueDate: "",
+            },
     });
 
     async function onSubmit(values: CreateTaskRequest) {
         try {
-            await addTaskMutation.mutate(values);
-            toast.success("Task added successfully");
-        }catch (e) {
-            toast.error("Error adding task");
+            if (isUpdate && task) {
+                await updateMutation.mutate({
+                    id: task._id,
+                    updateData: values,
+                });
+                toast.success("Task updated successfully");
+            } else {
+                await addMutation.mutate(values);
+                toast.success("Task added successfully");
+            }
+        } catch (e) {
+            toast.error("Error saving task");
         }
     }
 
@@ -136,9 +162,13 @@ export default function AddTaskForm() {
                         )}
                     />
 
-                    <Button type="submit" disabled={addTaskMutation.isPending}>
-                        {
-                            addTaskMutation.isPending ? 'Adding Task' : 'Add Task'
+                    <Button
+                        type="submit"
+                        disabled={isUpdate ? updateMutation.isPending : addMutation.isPending}
+                    >
+                        {isUpdate
+                            ? (updateMutation.isPending ? "Updating Task..." : "Update Task")
+                            : (addMutation.isPending ? "Adding Task..." : "Add Task")
                         }
                     </Button>
 
